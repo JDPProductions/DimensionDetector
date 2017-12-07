@@ -191,7 +191,10 @@ def evaluationFloorCount(building):
 
 def createImage():
     measurements = []
-    img = Image.open('./demo_samples/userimage_full.png').convert('RGBA')
+    with open("./demo_samples/imageToUse.txt") as f:
+        for line in f:
+            imagename = line
+    img = Image.open('./demo_samples/'+ imagename +'.png').convert('RGBA')
     draw = ImageDraw.Draw(img)
     font = ImageFont.truetype("arial.ttf",60)
 
@@ -211,6 +214,8 @@ def createImage():
             if(actualBuildingHeight != "0"):
                 #we know the height of the building
                 percentError = abs(((float(actualBuildingHeight) - predictedHeight) / float(actualBuildingHeight)) * 100)
+            else:
+                percentError = 0
 
             draw.rectangle((xLeftCoord, yBottomCoord, xRightCoord, yTopCoord), outline ='red')
             draw.rectangle((xLeftCoord+1, yBottomCoord+1, xRightCoord+1, yTopCoord+1), outline ='red')
@@ -235,6 +240,8 @@ def createImage():
     buttonImg.save("./assets/userimage_measurementbutton.gif")
 
 def main():
+
+    print("measurement file called")
 
     objectDetectionFile = "./object_detection/userimage_detection.txt"
 
@@ -269,7 +276,8 @@ def main():
             else:
                 #averages the estimations. Currently weight for each estimation is equal
                 # the * 1 attached to each estimation is the weight for those estimations
-                average = ((estimation1 * 1.2) + (estimation2 * 0.6) + (estimation3 * 1.2)) / divideCount
+
+                average = ((estimation1 * 0.3) + (estimation2 * 0.2) + (estimation3 * 0.5))
 
             building[7] = average
 
@@ -278,5 +286,3 @@ def main():
             newF.write("\n")
         newF.close()
         createImage()
-
-main()

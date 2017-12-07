@@ -7,11 +7,15 @@ def main():
     #userImg = Image.open("./user_image/userimage_full.png")
     #pass user image to yolo for detection
     #save yolo output for measurement and display
+    print("object file called")
 
+    with open("./demo_samples/imageToUse.txt") as f:
+        for line in f:
+            shutil.copy("./demo_samples/" + line + "_detection.png", "./object_detection/userimage_detection.png")
+            shutil.copy("./demo_samples/" + line + "_detection.txt", "./object_detection/userimage_detection.txt")
 
     #manual grab from samples
-    shutil.copy("./demo_samples/userimage_detection.png", "./object_detection/userimage_detection.png")
-    shutil.copy("./demo_samples/userimage_detection.txt", "./object_detection/userimage_detection.txt")
+
 
     detectionImg = Image.open("./object_detection/userimage_detection.png")
 

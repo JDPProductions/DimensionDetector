@@ -9,6 +9,7 @@ import subprocess
 import time
 import MeasurementDetection
 import ObjectDetection
+import os
 
 #
 # Function: uploadImageFile()
@@ -22,6 +23,12 @@ def uploadImageFile():
     #  and stores selected photo into filename
     root.filename =  filedialog.askopenfilename(initialdir = "./",title = "Select file",filetypes = (("All Files","*.*"),("png Files", "*.png"),("jpeg Files","*.jpg")))
     print (root.filename) #Console Check Test
+
+    rootname = os.path.basename(root.filename)
+    name =  rootname.replace('.png','')
+    reference = open("./demo_samples/imageToUse.txt", 'w')
+    reference.write(name)
+    reference.close()
 
     #open image, resize, and save
     shutil.copy(root.filename,"./user_image/userimage_full.png")
@@ -46,20 +53,21 @@ def uploadImageFile():
 def changeImage1():
     canvas.delete("all")
     newImage1 = PhotoImage(file = "assets/userimage_originalcanvas.png")
-    canvas.create_image(0,0, anchor='nw',image=newImage1)
+    canvas.create_image(canvas.winfo_width()/2,canvas.winfo_height()/2, anchor='center', image=newImage1)
     canvas.image = newImage1
+    canvas.pack(side=LEFT, pady=10, padx=50)
 
 def changeImage2():
     canvas.delete("all")
     newImage2 = PhotoImage(file = "assets/userimage_detectioncanvas.png")
-    canvas.create_image(0,0, anchor='nw',image=newImage2)
+    canvas.create_image(canvas.winfo_width()/2,canvas.winfo_height()/2, anchor='center', image=newImage2)
     canvas.image = newImage2
     canvas.pack(side=LEFT, pady=10, padx=50)
 
 def changeImage3():
     canvas.delete("all")
     newImage3 = PhotoImage(file = "assets/userimage_measurementcanvas.png")
-    canvas.create_image(0,0, anchor='nw',image=newImage3)
+    canvas.create_image(canvas.winfo_width()/2,canvas.winfo_height()/2, anchor='center', image=newImage3)
     canvas.image = newImage3
     canvas.pack(side=LEFT, pady=10, padx=50)
 
@@ -69,29 +77,48 @@ def changeImage3():
 #      buttons with the matched images from the root folder
 #      and apply image to button surface
 def createImgButtons():
+    rightFrame.destroy()
+    rightFrame = Frame(mainFrame, width=255, height=150, bg="#343434")
+    rightFrame.pack(side=LEFT, fill=Y, expand=False, anchor=W)
+
     #count testing purposes
-    originalPhoto = PhotoImage(file="assets/userimage_originalbutton.gif")
-    originalButton = Button(rightFrame, image=originalPhoto, command=changeImage1)
+    originalPhoto = PhotoImage(file="assets/3.png")
+    originalButton = Button(rightFrame, image=originalPhoto, borderwidth=0, bg="#343434")
     originalButton.image = originalPhoto
     originalButton.pack(padx=8, pady=8)
 
-    #call object detection function
-    ObjectDetection.main()
-    objectPhoto = PhotoImage(file="assets/userimage_detectionbutton.gif")
-    objectButton = Button(rightFrame, image=objectPhoto, command=changeImage2)
+    objectPhoto = PhotoImage(file="assets/3.png")
+    objectButton = Button(rightFrame, image=objectPhoto, borderwidth=0, bg="#343434")
     objectButton.image = objectPhoto
     objectButton.pack(padx=8, pady=8)
-    #objectButton = Button(rightFrame, width=30, height=8, font=('arial', 12, 'bold'), text="OBJ", bg="#343434", fg="white", command=changeImage2)
-    #objectButton.pack(fill=NONE, expand=True, padx=8, pady=8)
+
+    measurementPhoto = PhotoImage(file="assets/3.png")
+    measurementButton = Button(rightFrame, image=measurementPhoto, borderwidth=0, bg="#343434")
+    measurementButton.image = measurementPhoto
+    measurementButton.pack(padx=8, pady=8)
+    rightFrame.update_idletasks()
+
+    originalPhoto2 = PhotoImage(file="assets/userimage_originalbutton.gif")
+    originalButton.config(image=originalPhoto2, command=changeImage1)
+    originalButton.image = originalPhoto2
+    rightFrame.update_idletasks()
+
+    time.sleep(1)
+    #call object detection function
+    ObjectDetection.main()
+    objectPhoto2 = PhotoImage(file="assets/userimage_detectionbutton.gif")
+    objectButton.config(image=objectPhoto2, command=changeImage2)
+    objectButton.image = objectPhoto2
+    rightFrame.update_idletasks()
+
+    time.sleep(1)
 
     #call measurement detection function
     MeasurementDetection.main()
-    measurementPhoto = PhotoImage(file="assets/userimage_measurementbutton.gif")
-    measurementButton = Button(rightFrame, image=measurementPhoto, command=changeImage3)
-    measurementButton.image = measurementPhoto
-    measurementButton.pack(padx=8, pady=8)
-    #measurementButton = Button(rightFrame, width=30, height=8, font=('arial', 12, 'bold'), text="MEA", bg="#343434", fg="white", command=changeImage3)
-    #measurementButton.pack(fill=NONE, expand=True, padx=8, pady=8)
+    measurementPhoto2 = PhotoImage(file="assets/userimage_measurementbutton.gif")
+    measurementButton.config(image=measurementPhoto2, command=changeImage3)
+    measurementButton.image = measurementPhoto2
+    rightFrame.update_idletasks()
 
 #initialize root view
 root = Tk()
@@ -103,7 +130,7 @@ newF.close()
 root.overrideredirect(True)
 #customize screen size
 root.geometry('1280x680+0+0')
-
+print("file called")
 topFrame = Frame(root, height=50, padx=10, pady=5, bg="#343434")
 topFrame.pack(side=TOP, fill=X, expand=False, anchor=N)
 
@@ -151,7 +178,7 @@ uploadButton.pack(pady=8)
 centerFrame = Frame(mainFrame, width=900, height=100, bg="#808080")
 centerFrame.pack(side=LEFT, fill=Y, expand=False, anchor=W)
 
-canvas = Canvas(centerFrame, width=900, height=500)
+canvas = Canvas(centerFrame, width=900, height=500, bg="#808080", borderwidth=0)
 canvas.pack(side=LEFT, pady=10, padx=50)
 
 ###NOTE: IMAGE HEIGHT MUST BE 500 or less - will need to use opencv to resize
